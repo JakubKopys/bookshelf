@@ -1,0 +1,18 @@
+<div class="container">
+  <div class="col-sm-6 col-sm-offset-3">
+    <h2>Edit Book (ID: {{book._id}})</h2>
+    <form class="form" action="/books/{{book._id}}?_method=PUT" method="POST">
+      <input type="hidden" name="_csrf" value="{{csrf}}">
+
+      <div class="form-group">
+        <label for="title" class="ccontrol-label">Title</label>
+        <input type="text" class="form-control" id="title" name="title"
+               value="{{book.title}}">
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-default">Edit Book</button>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,17 @@
+<div class="container">
+  <div class="col-sm-6 col-sm-offset-3">
+    <h2>New Book</h2>
+    <form class="form" action="/books" method="POST">
+      <input type="hidden" name="_csrf" value="{{csrf}}">
+
+      <div class="form-group">
+        <label for="title" class="ccontrol-label">Title</label>
+        <input type="text" class="form-control" id="title" name="title">
+      </div>
+
+      <div class="form-group">
+        <button type="submit" class="btn btn-default">Add Book</button>
+      </div>
+    </form>
+  </div>
+</div>

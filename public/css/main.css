@@ -1,3 +1,12 @@
-/*body {
-  background-color: red;
-}*/
+button.del-link {
+  color: #ff3232;
+  text-decoration: underline;
+}
+
+button.del-link:hover {
+  color: #ff3232;
+}
+
+a.edit-link {
+  text-decoration: underline;
+}
