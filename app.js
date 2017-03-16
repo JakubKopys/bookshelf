@@ -5,7 +5,8 @@ var express         = require('express'),
     formidable      = require('formidable'),
     mongoose        = require('mongoose'),
     credentials     = require('./credentials.js'),
-    Book            = require('./models/book.js');
+    Book            = require('./models/Book.js'),
+    Author          = require('./models/Author.js');;
 
 // enable app var to be used in any file by requiring app.js
 var app = module.exports = express();
@@ -44,24 +45,54 @@ app.use(methodOverride('_method'))
 app.use(morgan('dev'));
 
 // set up routes
-app.use('/',      require('./routes/home.js'));
-app.use('/books', require('./routes/books.js'));
+app.use('/',        require('./routes/home.js'));
+app.use('/books',   require('./routes/books.js'));
+app.use('/authors', require('./routes/authors.js'));
+
+//TODO add repl/move utils functions to utils lib
+function descBooks() {
+  Book.find().populate('author').exec((err, books) => {
+    console.log(JSON.stringify(books, null, "\t"));
+  });
+}
+
+function addBook(author) {
+  new Book({
+    title: "Author book",
+    author: author._id
+  }).save((err, book) => {
+    if(err) return console.log(err);
+    console.log("Created book: " + book);
+    author.update({$push: {books: book._id}}, (err, auth) => {
+      if (err) return console.log(err);
+      console.log("Updated Author: " + auth);
+    });
+  });
+}
 
 // Seed dummy data
-Book.find((err, books) => {
-  if(books.length) return;
+Author.find((err, authors) => {
+  if(authors.length) return;
 
-  new Book({
-    title: 'Test Book #1'
-  }).save();
+  new Author({
+    name: 'Jakub Kopyś'
+  }).save((err, author) => {
+    addBook(author);
+  });
 
-  new Book({
-    title: 'Test Book #2'
-  }).save();
+  new Author({
+    name: 'Jan Kowalski'
+  }).save((err, author) => {
+    if (err) return console.log(err);
+    addBook(author);
+  });
 
-  new Book({
-    title: 'Test Book #3'
-  }).save();
+  new Author({
+    name: 'Juliusz Słowacki'
+  }).save((err, author) => {
+    if (err) return console.log(err);
+    addBook(author);
+  });
 });
 
 // 404 catch-all handler (middleware)

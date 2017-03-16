@@ -1,4 +1,4 @@
-var booksController = require('../controllers/booksController.js'),
+var BooksController = require('../controllers/BooksController.js'),
     NamedRouter     = require('named-routes'),
     app             = require('../app.js'),
     router          = require('express').Router();
@@ -10,12 +10,13 @@ namedRouter.extendExpress(app);
 namedRouter.registerAppHelpers(app);
 namedRouter.extendExpress(router);
 
-router.get('/new', 'new', booksController.new);
-router.get('/:id', booksController.show);
-router.delete('/:id', booksController.delete);
-router.get('/edit/:id', booksController.edit);
-router.put('/:id', booksController.update);
-router.get('/', 'books', booksController.index);
-router.post('/', booksController.create);
+router.get('/new', 'new', BooksController.new);
+router.get('/:id', BooksController.show);
+router.delete('/:id', BooksController.delete);
+router.get('/edit/:id', BooksController.edit);
+router.get('/search/:title', BooksController.search);
+router.put('/:id', BooksController.update);
+router.get('/', 'books', BooksController.index);
+router.post('/', BooksController.create);
 
 module.exports = router;
