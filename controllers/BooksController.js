@@ -41,7 +41,7 @@ class BooksController {
       title: req.body.title,
       author: req.body.author
     }).save((err, book) => {
-      if (err) next(err);
+      if (err) return next(err);
 
       // Add new book to authors books
       Author.findByIdAndUpdate(book.author, {$push: {books: book._id}},(err, auth) => {
@@ -80,7 +80,7 @@ class BooksController {
         if (err) return next(err);
         if (oldAuthor != newAuthor) {
           console.log("Authors changed");
-          // TODO maybe add model function doing so? Or other helper one
+          // TODO maybe add model function doing so? Or other helper oneo
           // Authors changed, so we have to remove book from old one
           // and add to the new authors books
           // removing book id from old authors books
