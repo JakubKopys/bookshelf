@@ -60,9 +60,12 @@ class AuthorsController {
   }
 
   delete(req, res, next) {
-    Author.findOneAndRemove({'_id': req.params.id}, (err, data) => {
+    Author.findOne({'_id': req.params.id}, (err, author) => {
       if (err) return next(err);
-      res.redirect(303, '/authors');
+      author.remove((err, author) => {
+        if (err) return next(err);
+        res.redirect(303, '/authors');
+      });
     });
   }
 

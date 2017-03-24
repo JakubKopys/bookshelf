@@ -18,11 +18,6 @@ function addBook(author) {
     author: author._id
   }).save((err, book) => {
     if(err) return console.log(err);
-    console.log("Created book: " + book);
-    author.update({$push: {books: book._id}}, (err, auth) => {
-      if (err) return console.log(err);
-      console.log("Updated Author: " + auth);
-    });
   });
 }
 
@@ -50,6 +45,24 @@ Author.find((err, authors) => {
     addBook(author);
   });
 });
+
+Book.findOneAndUpdate({_id: 110}, {$set: {
+  title: ':DDDl',
+  author: 110
+}}, (err, book) => {
+  if (err) return console.log(err);
+  console.log(book);
+});
+// Book.changeAuthors(91, 1, 2);
+// Book.findOne({_id: 91}, (err, book) => {
+//   if(err) return console.log(err);
+//   console.log(book);
+//   book.update({ $set: {
+//     title: 'XDDDDDDD',
+//   }}, (err, book) => {
+//     console.log(require('util').inspect(book, { depth: null }));
+//   });
+// });
 
 app.listen(app.get('port'), () => {
   console.log( 'Express started in ' + app.get('env') +

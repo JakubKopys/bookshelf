@@ -42,11 +42,6 @@ class BooksController {
       author: req.body.author
     }).save((err, book) => {
       if (err) return next(err);
-
-      // Add new book to authors books
-      Author.findByIdAndUpdate(book.author, {$push: {books: book._id}},(err, auth) => {
-        if (err) return console.log(err);
-      });
       res.redirect(303, '/books');
     });
   }
@@ -54,6 +49,7 @@ class BooksController {
 
   edit(req, res, next) {
     // TODO Use populate instead of nesting findBy and callbacks
+    // idk
     Author.find((err, authors) => {
       Book.findById(req.params.id, (err, book) => {
         if (err) return next(err);
@@ -71,44 +67,36 @@ class BooksController {
     var id = req.params.id;
     var title = req.body.title;
     var newAuthor = req.body.author;
-    Book.findById(id, (err, book)=>{
+    Book.findById(id, (err, book) => {
       var oldAuthor = book.author;
       book.update({ $set: {
         title: title,
         author: newAuthor
-      }}, (err, book) => {
+      }}, (err) => {
         if (err) return next(err);
         if (oldAuthor != newAuthor) {
           console.log("Authors changed");
-          // TODO maybe add model function doing so? Or other helper oneo
           // Authors changed, so we have to remove book from old one
           // and add to the new authors books
           // removing book id from old authors books
-          Author.findById(oldAuthor, (err, old) => {
-            if (err) return console.log(err);
-            console.log("removed from: " + old);
-            console.log("usuwana ksiązka: " + id);
-            old.update({$pull: {books: id}}, (err, a) => {
-              if (err) console.log(err);
-              console.log("Old after update: " + old);
-            });
-          });
-          // adding book to new author
-          Author.findByIdAndUpdate(newAuthor, {$push: {books: id}},(err, auth) => {
-            if (err) return console.log(err);
-          });
+          Book.changeAuthors(book._id, oldAuthor, newAuthor);
         };
         res.redirect('/books');
       });
     });
-
-    // TODO change authors of the book -> newauthor and oldauthor variables
   }
 
   delete(req, res, next) {
-    Book.findOneAndRemove({'_id': req.params.id}, (err, data) => {
+    Book.findOneAndRemove({'_id': req.params.id}, (err, book) => {
       if (err) return next(err);
-      res.redirect(303, '/books' + app.namedRoutes.build('books'));
+      console.log("Deleting book: "+ book);
+
+      // remove book from its authors books
+      Author.findByIdAndUpdate(book.author, {$pull: {books: book.id}}, (err, author) => {
+        if (err) return console.log(err);
+        console.log("Author after update: " + author);
+        res.redirect(303, '/books');
+      });
     });
   }
 

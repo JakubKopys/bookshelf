@@ -51,6 +51,12 @@ class Bootstrap {
       pass: credentials.mongo.dev.pass
     }
     mongoose.connect(credentials.mongo.dev.url, options);
+
+    var db = mongoose.connection;
+    db.on('error', console.error.bind(console, 'connection error:'));
+    db.once('open', function() {
+      console.log("connected to mongodb");
+    });
   }
 
   routes() {

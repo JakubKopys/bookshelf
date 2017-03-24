@@ -11,10 +11,13 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.17.1",
+    "captain-hook": "0.0.3",
+    "cookie-parser": "^1.4.3",
     "express": "^4.15.2",
     "express-handlebars": "^3.0.0",
     "express-session": "^1.15.1",
     "formidable": "^1.1.1",
+    "hooker": "^0.2.3",
     "method-override": "^2.3.7",
     "mongoose": "^4.9.0",
     "mongoose-auto-increment": "^5.0.1",
