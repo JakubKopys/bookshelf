@@ -16,6 +16,7 @@ class BooksController {
   }
 
   index(req, res, next) {
+    console.log("LOGGED IN USER: " + req.user);
     Book.find({}, 'title', (err, books) => {
       if(err) return next(err);
 

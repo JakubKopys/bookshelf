@@ -19,7 +19,10 @@ authorSchema.post('remove', (author) => {
 });
 
 autoIncrement.initialize(mongoose.connection);
-authorSchema.plugin(autoIncrement.plugin, 'Author');
+authorSchema.plugin(autoIncrement.plugin, {
+    model: 'Author',
+    startAt: 1
+});
 var Author = mongoose.model('Author', authorSchema);
 
 module.exports = Author;

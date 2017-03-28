@@ -2,6 +2,7 @@
   <div class="col-sm-6 col-sm-offset-3">
     <h2>Edit Book (ID: {{book._id}})</h2>
     <form class="form" action="/books/{{book._id}}?_method=PUT" method="POST">
+
       <input type="hidden" name="_csrf" value="{{csrf}}">
 
       <div class="form-group">
@@ -12,9 +13,7 @@
       <div class="form-group">
         <label for="author" class="control-label">Author</label>
         <select class="form-control" name="author">
-          {{#each authors}}
-            {{#ifCond _id '==' ../book.author }}
-              <option selected value={{../_id}}>{{../name}}</option>
+          {{#each authors}}              <option selected value={{../_id}}>{{../name}}</option>
             {{else}}
               <option value={{../_id}}>{{../name}}</option>
             {{/ifCond}}

@@ -49,7 +49,10 @@ bookSchema.post('save', book => {
 // });
 
 autoIncrement.initialize(mongoose.connection);
-bookSchema.plugin(autoIncrement.plugin, 'Book');
+bookSchema.plugin(autoIncrement.plugin, {
+    model: 'Book',
+    startAt: 1
+});
 
 var Book = mongoose.model('Book', bookSchema);
 
