@@ -4,15 +4,19 @@ var mongoose      = require('mongoose'),
     autoIncrement = require('mongoose-auto-increment');
 
 var bookSchema = Schema({
-    title: String,
+    title: {
+      type: String,
+      required: true,
+      maxlength: 255,
+      minlength: 2
+    },
     author: {
         type: Number,
-        ref: 'Author'
+        ref: 'Author',
+        required: true
     }
 });
-
 bookSchema.statics.changeAuthors = (bookId, oldAuthor, newAuthor) => {
-  console.log("CHanign authors");
   Author.findOneAndUpdate({_id: oldAuthor}, {$pull: {books: bookId}}, (err) => {
     if (err) console.log(err);
   });
@@ -34,19 +38,6 @@ bookSchema.post('save', book => {
   });
 });
 
-
-// TODO: UŻYJ TEGO DO POST FIND AND update
-// znajduje autoróœ z daną książką -> więc nie potrzebujemy id starego autora
-// bu usunąć książkę mu (pierwsze find może być findOne)
-// JEDNAK NEI MAM NWOEGU AUTORA XDDXXDXDXDXDXDXDDX
-// Author.find({"books": bookId}, (err, author) => {
-//   // pierw usun autorowi książkę
-//   author.update({$pull: {books: id}}, err => {
-//     if (err) console.log(err);
-//     // tutaj dodaj nowemu autorowi
-//     Author.findByIdAndUpdate(newAuthor, {$push: {books: id}});
-//   });
-// });
 
 autoIncrement.initialize(mongoose.connection);
 bookSchema.plugin(autoIncrement.plugin, {

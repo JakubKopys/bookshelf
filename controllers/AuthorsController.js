@@ -1,51 +1,32 @@
-var Book        = require('../models/Book.js');
 var Author      = require('../models/Author.js');
 var app         = require('../app.js');
-// var customerViewModel = require('../viewModels/customer.js');
 
 class AuthorsController {
   show(req, res, next) {
     Author.findById(req.params.id).populate('books').exec((err, author) => {
       if (err) return next(err);
       if (!author) return next(); // author not found - pass this on to 404 handler
-      res.render('authors/show', {
-        author: author,
-        books: author.books
-      });
+      res.json(author);
     });
   }
 
   index(req, res, next) {
     Author.find({}, 'name', (err, authors) => {
-      if(err) return next(err);
-
-      // res.json(authors);
-      res.render('authors/index', {
-        authors: authors
-      });
+      if (err) return next(err);
+      res.json(authors)
     });
   }
 
-  new(req, res, next) {
-    res.render('authors/new');
-  }
 
   create(req, res, next) {
     new Author({
       name: req.body.name
-    }).save((err) => {
+    }).save((err, author) => {
       if (err) return console.log(err);
-      res.redirect(303, '/authors');
-    });
-  }
-
-  edit(req, res, next) {
-    Author.findById(req.params.id, (err, author) => {
-      if (err) return next(err);
-      if (!author) return next();
-      res.render('authors/edit', {
+      res.json({
+        success: true,
         author: author
-      });
+      })
     });
   }
 
@@ -55,16 +36,28 @@ class AuthorsController {
     Author.findByIdAndUpdate(id, { $set: { name: name }}, (err, author) => {
       if (err) return next(err);
       if (!author) return next();
-      res.redirect('/authors');
+      res.json({
+        success: true,
+        author: author
+      });
     });
   }
 
   delete(req, res, next) {
     Author.findOne({'_id': req.params.id}, (err, author) => {
       if (err) return next(err);
+
+      if (!author) return res.json({
+        success: false,
+        message: 'Author not found.'
+      });
+
       author.remove((err, author) => {
         if (err) return next(err);
-        res.redirect(303, '/authors');
+
+        res.json({
+          success: true,
+        });
       });
     });
   }

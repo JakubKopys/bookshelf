@@ -1,22 +1,15 @@
 var BooksController = require('../controllers/BooksController.js'),
-    // NamedRouter     = require('named-routes'),
-    // app             = require('../app.js'),
-    router          = require('express').Router();
+    router          = require('express').Router(),
+    auth            = require('../lib/auth.js');
 
+// middleware verifing jwt token
+router.use(auth.verify);
 
-// enable express router to use named routes by extending it
-// var namedRouter = new NamedRouter();
-// namedRouter.extendExpress(app);
-// namedRouter.registerAppHelpers(app);
-// namedRouter.extendExpress(router);
-
-router.get('/new', BooksController.new);
 router.get('/:id', BooksController.show);
-router.delete('/:id', BooksController.delete);
-router.get('/edit/:id', BooksController.edit);
+router.delete('/:id', auth.requireRole('ADMIN'), BooksController.delete);
 router.get('/search/:title', BooksController.search);
-router.put('/:id', BooksController.update);
+router.put('/:id', auth.requireRole('ADMIN'), BooksController.update);
 router.get('/', BooksController.index);
-router.post('/', BooksController.create);
+router.post('/', auth.requireRole('ADMIN'), BooksController.create);
 
 module.exports = router;

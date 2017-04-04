@@ -1,5 +1,4 @@
 var mongoose      = require('mongoose'),
-    Book          = require('./Book.js'),
     Schema        = mongoose.Schema,
     autoIncrement = require('mongoose-auto-increment');
 
@@ -8,13 +7,11 @@ var authorSchema = mongoose.Schema({
     books: [{ type: Number, ref: 'Book' }]
 });
 
-
 // ON DELETE: CASCADE for books
 authorSchema.post('remove', (author) => {
   console.log("POST REMOVE: " + author);
-  Book.remove({author: author._id}, (err, book) => {
+  require('./Book.js').remove({author: author._id}, (err, book) => {
     if (err) return console.log(err);
-    console.log("Deleting book: " + book);
   });
 });
 

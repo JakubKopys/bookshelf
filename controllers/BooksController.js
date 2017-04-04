@@ -1,38 +1,22 @@
 var Book        = require('../models/Book.js');
-var Author      = require('../models/Author.js');
-var app         = require('../app.js');
-// var customerViewModel = require('../viewModels/customer.js');
 
 class BooksController {
   show(req, res, next) {
     Book.findById(req.params.id).populate('author').exec((err, book) => {
       if (err) return next(err);
-      if (!book) return next(); // book not found - pass this on to 404 handler
-      res.render('books/show', {
-        book: book,
-        author: book.author
+      if (!book) return res.status(404).json({
+        success: false,
+        message: 'Book not found'
       });
+      res.json(book);
     });
   }
 
   index(req, res, next) {
-    console.log("LOGGED IN USER: " + req.user);
     Book.find({}, 'title', (err, books) => {
       if(err) return next(err);
 
-      // res.json(books);
-      res.render('books/index', {
-        books: books,
-        name: '/books'
-      });
-    });
-  }
-
-  new(req, res, next) {
-    Author.find((err, authors) => {
-      res.render('books/new', {
-        authors: authors
-      });
+      res.json(books);
     });
   }
 
@@ -43,23 +27,7 @@ class BooksController {
       author: req.body.author
     }).save((err, book) => {
       if (err) return next(err);
-      res.redirect(303, '/books');
-    });
-  }
-
-
-  edit(req, res, next) {
-    // TODO Use populate instead of nesting findBy and callbacks
-    // idk
-    Author.find((err, authors) => {
-      Book.findById(req.params.id, (err, book) => {
-        if (err) return next(err);
-        if (!book) return next(); // book not found - pass this on to 404 handler
-        res.render('books/edit', {
-          book: book,
-          authors: authors
-        });
-      });
+      res.json(book);
     });
   }
 
@@ -90,13 +58,22 @@ class BooksController {
   delete(req, res, next) {
     Book.findOneAndRemove({'_id': req.params.id}, (err, book) => {
       if (err) return next(err);
+
+      if (!book) return res.json({
+        success: false,
+        message: 'Book not found.'
+      });
+
       console.log("Deleting book: "+ book);
 
       // remove book from its authors books
       Author.findByIdAndUpdate(book.author, {$pull: {books: book.id}}, (err, author) => {
         if (err) return console.log(err);
         console.log("Author after update: " + author);
-        res.redirect(303, '/books');
+        res.json({
+          success: true,
+          message: 'Book deleted.'
+        });
       });
     });
   }
