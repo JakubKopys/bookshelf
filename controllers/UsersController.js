@@ -3,6 +3,7 @@ var passport = require('passport');
 var util = require('util');
 var jwt = require('jsonwebtoken');
 var app = require('../app.js');
+var credentials = require('../credentials.js');
 
 class UserController {
   index(req, res) {
@@ -16,7 +17,7 @@ class UserController {
     //if user is found and password matches create a token
     var token = jwt.sign({
       user: user._id
-    }, app.get('jwtSecret'), {
+    }, credentials.jwt.secret, {
       expiresIn: '1440m' // expires in 24 hours.
     });
     // return the information including token as json
@@ -96,13 +97,7 @@ class UserController {
       req.getValidationResult().then( result => {
         var promises = [];
 
-
         var errors = result.mapped();
-        var err_msg = {
-          username: true,
-          password: true,
-          email: true
-        };
 
         if (('username' in req.body) && !('username' in errors)) {
           promises.push(user.update({username: req.body.username}).exec());
@@ -113,7 +108,10 @@ class UserController {
         }
 
         if (('password' in req.body) && !('password' in errors)) {
-          romises.push(user.setPassword(req.body.password).exec());
+          user.setPassword(req.body.password, (err) => {
+            if (err) return console.log(err);
+          });
+          promises.push(user.save());
         }
 
         Promise.all(promises)
@@ -133,15 +131,16 @@ class UserController {
           }
         })
         .catch((err) => {
-          // promise is rejsected only if mongoose error occurs -
+          // promise is rejected only if mongoose error occurs -
           // for example in case of unique index violation
 
           console.log("Caught error: " + err);
           // 11000 is mongodb code for unique constarint validation
           if (err.code && err.code === 11000) {
+            var failed =  err.message.includes("email") ? "email" : "username";
             return res.status(409).send({
               success: false,
-              message: 'This email has already been taken.'
+              message: failed + ' has already been taken.'
             });
           }
           res.json({
@@ -150,8 +149,6 @@ class UserController {
             error: err
           });
         });
-
-
       });
 
     });
