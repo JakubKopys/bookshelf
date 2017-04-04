@@ -44,7 +44,7 @@ class UserController {
             if (err.code && err.code === 11000) {
               return res.status(409).send({
                 success: false,
-                message: 'This email is already taken.'
+                message: 'This email has already been taken.'
               });
             }
             // REST API ERROR
@@ -105,45 +105,53 @@ class UserController {
         };
 
         if (('username' in req.body) && !('username' in errors)) {
-          promises.push()
+          promises.push(user.update({username: req.body.username}).exec());
         }
 
         if (('email' in req.body) && !('email' in errors)) {
-          user.update({email: req.body.email}).exec((err, user) => {
-            // TODO: add email: error to errors array instead of that
-            if (err) {
-              // 11000 is mongodb code for unique constarint validation
-              if (true) {
-                errors["email"] = {
-                  "param": "email",
-                  "msg": "inv email",
-                  "value": req.body.email
-                }
-              }
-            }
-          });
+          promises.push(user.update({email: req.body.email}).exec());
         }
 
         if (('password' in req.body) && !('password' in errors)) {
-          user.setPassword(req.body.password, (err) => {
-            if (err) return res.status(500).json({
-              success: false,
-              message: 'Server error. password'
-            });
-          });
+          romises.push(user.setPassword(req.body.password).exec());
         }
 
-        if (Object.keys(errors).length > 0) {
+        Promise.all(promises)
+        .then(() => {
+          console.log("Err: " + err);
+          console.log("Errors: " + errors);
+          if (Object.keys(errors).length > 0) {
+            res.json({
+              success: false,
+              errors: errors,
+            });
+          } else {
+            res.json({
+              success: true,
+              msg: "successfully updated user."
+            });
+          }
+        })
+        .catch((err) => {
+          // promise is rejsected only if mongoose error occurs -
+          // for example in case of unique index violation
+
+          console.log("Caught error: " + err);
+          // 11000 is mongodb code for unique constarint validation
+          if (err.code && err.code === 11000) {
+            return res.status(409).send({
+              success: false,
+              message: 'This email has already been taken.'
+            });
+          }
           res.json({
             success: false,
-            errors: errors,
+            msg: 'Invalid data.',
+            error: err
           });
-        } else {
-          res.json({
-            success: true,
-            msg: "successfully updated user."
-          });
-        }
+        });
+
+
       });
 
     });
