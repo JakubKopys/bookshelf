@@ -88,9 +88,9 @@ class UserController {
       });
 
       if ('username' in req.body)
-        req.checkBody('username', 'Invalid username').isLength({min:2, max: 50});
+        req.checkBody('username', 'Invalid username').isLength({min:6, max: 50});
       if ('password' in req.body)
-        req.checkBody('password', 'Invalid password').isLength({min:2, max: 50});
+        req.checkBody('password', 'Invalid password').isLength({min:6, max: 50});
       if ('email' in req.body)
         req.checkBody('email', 'Invalid email').isEmail();
 
@@ -116,8 +116,8 @@ class UserController {
 
         Promise.all(promises)
         .then(() => {
-          console.log("Err: " + err);
-          console.log("Errors: " + errors);
+          // console.log("Err: " + err);
+          // console.log("Errors: " + errors);
           if (Object.keys(errors).length > 0) {
             res.json({
               success: false,

@@ -7,7 +7,7 @@ router.post('/login', passport.authenticate('local'), UsersController.loginUser)
 router.post('/register', UsersController.registerUser);
 
 router.use(auth.verify);
-router.post('/:id', auth.requireRole('ADMIN'), UsersController.update);
+router.put('/:id', auth.requireRole('ADMIN'), UsersController.update);
 router.get('/', UsersController.index);
 router.get('/logout', UsersController.logout);
 

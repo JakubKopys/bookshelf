@@ -47,8 +47,6 @@ userSchema.plugin(autoIncrement.plugin, {
 userSchema.plugin(passportLocalMongoose);
 // userSchema.plugin(uniqueValidator);
 
-
-
 var User = mongoose.model('User', userSchema);
 
 module.exports = User;

@@ -1,3 +1,5 @@
+"use strict"
+
 var express         = require('express'),
     exphbs          = require('express-handlebars'),
     methodOverride  = require('method-override'),
@@ -12,7 +14,7 @@ var express         = require('express'),
     util            = require('util'),
     User            = require('./models/User.js'),
     Book            = require('./models/Book.js'),
-    Author          = require('./models/Author.js')
+    Author          = require('./models/Author.js'),
     auth            = require('./lib/auth.js');
 
 var passport = require('passport');

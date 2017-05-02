@@ -1,4 +1,5 @@
 var Book        = require('../models/Book.js');
+var Author      = require('../models/Author.js');
 
 class BooksController {
   show(req, res, next) {
@@ -26,8 +27,12 @@ class BooksController {
       title: req.body.title,
       author: req.body.author
     }).save((err, book) => {
-      if (err) return next(err);
-      res.json(book);
+      if (err) return res.status(500).json(err);
+      res.json({
+        success: true,
+        msg: 'Book created.',
+        book: book
+      });
     });
   }
 
@@ -50,7 +55,10 @@ class BooksController {
           // removing book id from old authors books
           Book.changeAuthors(book._id, oldAuthor, newAuthor);
         };
-        res.redirect('/books');
+        res.json({
+          success: true,
+          msg: 'Successfully updated book.'
+        });
       });
     });
   }
